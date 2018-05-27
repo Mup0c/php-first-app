@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% block head %}
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" href="/css/style.css">
+    {% endblock %}
+</head>
+<body>
+<div id="wrapper">
+    <form name="login-form" class="login-form" action="" method="post">
+
+        <div class="header">
+            {% block header %}{% endblock %}
+        </div>
+
+        <div class="content">
+            {% block content %}{% endblock %}
+        </div>
+
+        <div class="footer">
+            {% block footer %}{% endblock %}
+        </div>
+
+    </form>
+</div>
+
+</body>
+</html>

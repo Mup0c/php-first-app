@@ -1,0 +1,5 @@
+/tmp
+/vendor
+/dump/*
+!/dump/.gitkeep
+/.idea
