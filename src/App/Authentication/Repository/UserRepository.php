@@ -39,6 +39,7 @@ class UserRepository implements UserRepositoryInterface
         $stmt = $this->connection->prepare("SELECT id, login, password, salt FROM users WHERE id = ?");
         $stmt->bind_param('i', $id);
         $stmt->execute();
+        $stmt->close();
 
         foreach ($stmt->get_result() as $row) {
             return new User($row['id'], $row['login'], $row['password'], $row['salt']);
@@ -58,6 +59,7 @@ class UserRepository implements UserRepositoryInterface
         $stmt = $this->connection->prepare("SELECT id, login, password, salt FROM users WHERE login = ?");
         $stmt->bind_param('s', $login);
         $stmt->execute();
+        $stmt->close();
 
         foreach ($stmt->get_result() as $row) {
             return new User($row['id'], $row['login'], $row['password'], $row['salt']);
@@ -76,5 +78,6 @@ class UserRepository implements UserRepositoryInterface
         $stmt = $this->connection->prepare("INSERT INTO users (login, password, salt) VALUES (?, ?, ?)");
         $stmt->bind_param('sss',$user->getLogin(),$user->getPassword(), $user->getSalt());
         $stmt->execute();
+        $stmt->close();
     }
 }
