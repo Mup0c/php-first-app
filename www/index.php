@@ -14,5 +14,3 @@ try {
 } catch (Twig_Error_Runtime $e) {
 } catch (Twig_Error_Syntax $e) {
 }
-
-var_dump( $_COOKIE["name"]);

@@ -34,12 +34,12 @@ class User implements UserInterface
 
     /**
      * User constructor.
-     * @param int $id
+     * @param null|int $id
      * @param string $login
      * @param string $password
      * @param null|string $salt
      */
-    public function __construct(int $id, string $login, string $password, ?string $salt)
+    public function __construct(?int $id, string $login, string $password, ?string $salt)
     {
         $this->id = $id;
         $this->login = $login;

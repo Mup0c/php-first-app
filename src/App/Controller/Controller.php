@@ -15,6 +15,7 @@ use App\Authentication\Repository\UserRepositoryInterface;
 use App\Authentication\Service\AuthenticationServiceInterface;
 use App\Authentication\Service\AuthenticationService;
 use App\Authentication\UserTokenInterface;
+use App\Authentication\User;
 
 class Controller
 {
@@ -78,15 +79,44 @@ class Controller
                 header("Location: /");
                 return;
             }
+            echo('<h2> Неверный логин или пароль!</h2>');
+
         }
 
         $template = $this->twig->load('signIn.html.twig');
         $template->display();
     }
 
+    /**
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
     public function signUpAction()
     {
-        echo("регистрация");
+        if (!$this->userToken->isAnonymous()) {
+            header("Location: /");
+            return;
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $login = $_POST['login'];
+            $password = $this->passEncode->encodePassword($_POST['password']);
+            if (!empty($this->repo->findByLogin($login))) {
+                echo('<h2> Логин уже занят!</h2>');
+            } else {
+                $this->repo->save(new User(null, $login, $password, null));
+                $token = $this->authService->authenticate_by_password($login, $password);
+                if (!$token->isAnonymous()) {
+                    $credentials = $this->authService->generateCredentials($token->getUser());
+                    setcookie('auth_cookie', $credentials, time() + 300);
+                    header("Location: /");
+                    return;
+                }
+            }
+        }
+
+        $template = $this->twig->load('signUp.html.twig');
+        $template->display();
 
     }
 
@@ -106,9 +136,10 @@ class Controller
     public function HomeAction()
     {
         if (!$this->userToken->isAnonymous()){
-            echo('Дороу, '.$this->userToken->getUser()->getLogin());
+            echo('<h1> Дороу, '.$this->userToken->getUser()->getLogin());
+            echo('</h1><br><a href="/logout">Выход</a>');
         } else {
-            echo('go signin');
+            echo('<a href="/signIn">Вход</a>');
         }
     }
 }
