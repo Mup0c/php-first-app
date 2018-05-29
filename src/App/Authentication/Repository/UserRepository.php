@@ -55,7 +55,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function findByLogin(string $login): ?UserInterface
     {
-        $stmt = $this->connection->prepare("SELECT id, login, password, salt FROM users WHERE id = ?");
+        $stmt = $this->connection->prepare("SELECT id, login, password, salt FROM users WHERE login = ?");
         $stmt->bind_param('s', $login);
         $stmt->execute();
 

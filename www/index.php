@@ -7,7 +7,7 @@ require_once './init.php';
 //$repo = new \App\Authentication\Repository\UserRepository($link);
 //$repo->save(new \App\Authentication\User(5,'guest2',7072, null));
 //var_dump($repo->findById(4));
-$router = new \App\Routing\Router($twig);
+$router = new \App\Routing\Router($twig, $repo);
 try {
     $router->route();
 } catch (Twig_Error_Loader $e) {
@@ -15,4 +15,4 @@ try {
 } catch (Twig_Error_Syntax $e) {
 }
 
-echo $_COOKIE["name"];
+var_dump( $_COOKIE["name"]);

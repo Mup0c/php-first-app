@@ -13,15 +13,15 @@ class UserToken implements UserTokenInterface
 {
 
     /**
-     * @var UserInterface
+     * @var UserInterface|null
      */
     private $user;
 
     /**
      * UserToken constructor.
-     * @param UserInterface $user
+     * @param UserInterface|null $user
      */
-    public function __construct(UserInterface $user)
+    public function __construct(?UserInterface $user)
     {
         $this->user = $user;
     }
@@ -43,7 +43,7 @@ class UserToken implements UserTokenInterface
      */
     public function isAnonymous()
     {
-        if ($this->user = null){
+        if ($this->user == null){
             return true;
         }
         else{

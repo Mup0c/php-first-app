@@ -36,6 +36,15 @@ interface AuthenticationServiceInterface
 	 */
 	public function authenticate($credentials);
 
+    /**
+     * Метод аутентифицирует пользователя на основании логина и пароля
+     *
+     * @param string $login
+     * @param string $password
+     * @return UserTokenInterface
+     */
+    public function authenticate_by_password($login, $password);
+
 	/**
 	 * Метод генерирует authentication credentials
 	 *

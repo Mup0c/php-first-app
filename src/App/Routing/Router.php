@@ -4,6 +4,10 @@ namespace App\Routing;
 
 use App\Controller\Controller;
 
+/**
+ * Class Router
+ * @package App\Routing
+ */
 class Router
 {
     /**
@@ -24,12 +28,13 @@ class Router
     /**
      * Router constructor.
      * @param $twig
+     * @param $repo
      */
-    public function __construct($twig)
+    public function __construct($twig, $repo)
     {
         $this->link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         $this->parsed_url = parse_url($this->link);
-        $this->controller = new Controller($twig);
+        $this->controller = new Controller($twig, $repo);
     }
 
     /**
@@ -43,6 +48,8 @@ class Router
 
         switch ($path) {
             case '/':
+                $this->controller->HomeAction();
+                return;
             case '/signIn':
                 $this->controller->signInAction();
                 return;
