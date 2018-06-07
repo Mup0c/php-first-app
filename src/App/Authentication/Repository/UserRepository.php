@@ -78,6 +78,11 @@ class UserRepository implements UserRepositoryInterface
         $stmt = $this->connection->prepare("INSERT INTO users (login, password, salt) VALUES (?, ?, ?)");
         $stmt->bind_param('sss',$user->getLogin(),$user->getPassword(), $user->getSalt());
         $stmt->execute();
+        $saved_user_id = $this->connection->insert_id;
+        $stmt = $this->connection->prepare("INSERT INTO user_profile (user_id) VALUES (?)");
+        $stmt->bind_param('i',$saved_user_id);
+        $stmt->execute();
         $stmt->close();
+
     }
 }

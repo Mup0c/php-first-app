@@ -11,6 +11,9 @@ namespace App\Controller;
 
 use App\Authentication\Encoder\UserPasswordEncode;
 use App\Authentication\Encoder\UserPasswordEncoderInterface;
+use App\Authentication\Repository\UserDataRepository;
+use App\Authentication\Repository\UserDataRepositoryInterface;
+use App\Authentication\Repository\UserRepository;
 use App\Authentication\Repository\UserRepositoryInterface;
 use App\Authentication\Service\AuthenticationServiceInterface;
 use App\Authentication\Service\AuthenticationService;
@@ -27,7 +30,12 @@ class Controller
     /**
      * @var UserRepositoryInterface
      */
-    private $repo;
+    private $user_repo;
+
+    /**
+     * @var UserDataRepositoryInterface
+     */
+    private $user_data_repo;
 
     /**
      * @var AuthenticationServiceInterface
@@ -47,14 +55,15 @@ class Controller
     /**
      * Controller constructor.
      * @param $twig
-     * @param $repo
+     * @param $connection
      */
-    public function __construct($twig, $repo)
+    public function __construct($twig, $connection)
     {
         $this->twig = $twig;
-        $this->repo = $repo;
+        $this->user_repo = new UserRepository($connection);
+        $this->user_data_repo = new UserDataRepository($connection);
         $this->passEncode = new UserPasswordEncode();
-        $this->authService = new AuthenticationService($this->repo);
+        $this->authService = new AuthenticationService($this->user_repo);
         $this->userToken = $this->authService->authenticate($_COOKIE['auth_cookie']);
     }
 
@@ -101,10 +110,10 @@ class Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $login = $_POST['login'];
             $password = $this->passEncode->encodePassword($_POST['password']);
-            if (!empty($this->repo->findByLogin($login))) {
+            if (!empty($this->user_repo->findByLogin($login))) {
                 echo('<h2> Логин уже занят!</h2>');
             } else {
-                $this->repo->save(new User(null, $login, $password, null));
+                $this->user_repo->save(new User(null, $login, $password, null));
                 $token = $this->authService->authenticate_by_password($login, $password);
                 if (!$token->isAnonymous()) {
                     $credentials = $this->authService->generateCredentials($token->getUser());
@@ -136,6 +145,7 @@ class Controller
     public function HomeAction()
     {
         if (!$this->userToken->isAnonymous()){
+            var_dump($this->user_data_repo->getPostalCode($this->userToken->getUser()));
             echo('<h1> Дороу, '.$this->userToken->getUser()->getLogin());
             echo('</h1><br><a href="/logout">Выход</a>');
         } else {

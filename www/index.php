@@ -7,7 +7,7 @@ require_once './init.php';
 //$repo = new \App\Authentication\Repository\UserRepository($link);
 //$repo->save(new \App\Authentication\User(5,'guest2',7072, null));
 //var_dump($repo->findById(4));
-$router = new \App\Routing\Router($twig, $repo);
+$router = new \App\Routing\Router($twig, $connection);
 try {
     $router->route();
 } catch (Twig_Error_Loader $e) {

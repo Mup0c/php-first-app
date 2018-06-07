@@ -28,13 +28,13 @@ class Router
     /**
      * Router constructor.
      * @param $twig
-     * @param $repo
+     * @param $con
      */
-    public function __construct($twig, $repo)
+    public function __construct($twig, $con)
     {
         $this->link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
         $this->parsed_url = parse_url($this->link);
-        $this->controller = new Controller($twig, $repo);
+        $this->controller = new Controller($twig, $con);
     }
 
     /**
