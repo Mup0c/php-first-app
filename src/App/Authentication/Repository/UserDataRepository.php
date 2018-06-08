@@ -8,7 +8,6 @@
 
 namespace App\Authentication\Repository;
 
-
 use App\Authentication\UserInterface;
 
 class UserDataRepository implements UserDataRepositoryInterface
@@ -57,6 +56,33 @@ class UserDataRepository implements UserDataRepositoryInterface
 
     /**
      * @param UserInterface $user
+     * @param int $data
+     */
+    public function setPostalCode(UserInterface $user, int $data)
+    {
+        $this->setData($user, 'postal_code', $data);
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param int $data
+     */
+    public function setPhone(UserInterface $user, int $data)
+    {
+        $this->setData($user, 'phone', $data);
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param string $data
+     */
+    public function setCity(UserInterface $user, string $data)
+    {
+        $this->setData($user, 'city', $data);
+    }
+
+    /**
+     * @param UserInterface $user
      * @param string $column
      * @return mixed
      */
@@ -73,5 +99,18 @@ class UserDataRepository implements UserDataRepositoryInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param UserInterface $user
+     * @param string $column
+     * @param mixed $data
+     */
+    private function setData(UserInterface $user, string $column, $data)
+    {
+        $stmt = $this->connection->prepare("UPDATE user_profile SET ".$column." = ? WHERE user_id = ?");
+        $stmt->bind_param('si', $data, $user->getId());
+        $stmt->execute();
+        $stmt->close();
     }
 }
