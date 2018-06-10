@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактирование профиля</title>
+</head>
+<body>
+<a href="/profile">Отмена</a>
+<br><br>
+<h1><a>Редактирование профиля:</a></h1>
+<form method="post">
+<table>
+    {%  for name, data in user_data %}
+    <tr>
+        <td>{{ name }}: </td>
+        <td><input name="{{ name }}" value="{{ data }}" maxlength="32"></td>
+    </tr>
+    {% endfor %}
+</table>
+<input type="submit" value="Сохранить">
+</form>
+</body>
+</html>

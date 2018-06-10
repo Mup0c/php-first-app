@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+</head>
+<body>
+<a href="/profile?edit=true">Редактировать</a>
+<a href="/">  На главную</a>
+
+<br><br>
+<h1><a>Профиль:</a></h1>
+<table>
+    {%  for name, data in user_data %}
+    <tr>
+        <td>{{ name }}: </td>
+        <td>{{ data }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

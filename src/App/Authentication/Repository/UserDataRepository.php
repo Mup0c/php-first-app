@@ -29,20 +29,20 @@ class UserDataRepository implements UserDataRepositoryInterface
 
     /**
      * @param UserInterface $user
-     * @return int|null
+     * @return null|string
      */
-    public function getPostalCode(UserInterface $user): ?int
+    public function getPostalCode(UserInterface $user): ?string
     {
-        return $this->getData($user, 'postal_code');
+        return ($this->getData($user))['postal_code'];
     }
 
     /**
      * @param UserInterface $user
-     * @return int|null
+     * @return null|string
      */
-    public function getPhone(UserInterface $user): ?int
+    public function getPhone(UserInterface $user): ?string
     {
-        return $this->getData($user, 'phone');
+        return ($this->getData($user))['phone'];
     }
 
     /**
@@ -51,25 +51,25 @@ class UserDataRepository implements UserDataRepositoryInterface
      */
     public function getCity(UserInterface $user): ?string
     {
-        return $this->getData($user, 'city');
+        return ($this->getData($user))['city'];
     }
 
     /**
      * @param UserInterface $user
-     * @param int $data
+     * @param string $data
      */
-    public function setPostalCode(UserInterface $user, int $data)
+    public function setPostalCode(UserInterface $user, string $data)
     {
-        $this->setData($user, 'postal_code', $data);
+        $this->setData($user, array('postal_code' => $data));
     }
 
     /**
      * @param UserInterface $user
-     * @param int $data
+     * @param string $data
      */
-    public function setPhone(UserInterface $user, int $data)
+    public function setPhone(UserInterface $user, string $data)
     {
-        $this->setData($user, 'phone', $data);
+        $this->setData($user, array('phone' => $data));
     }
 
     /**
@@ -78,39 +78,45 @@ class UserDataRepository implements UserDataRepositoryInterface
      */
     public function setCity(UserInterface $user, string $data)
     {
-        $this->setData($user, 'city', $data);
+        $this->setData($user, array('city' => $data));
     }
 
     /**
      * @param UserInterface $user
-     * @param string $column
-     * @return mixed
+     * @return array
      */
-    private function getData(UserInterface $user, string $column)
+    public function getData(UserInterface $user): array
     {
-        $stmt = $this->connection->prepare("SELECT * FROM 
-                                                   users as u INNER JOIN user_profile as up ON u.id = up.user_id WHERE u.id = ?");
+        $stmt = $this->connection->prepare("SELECT * FROM user_profile as up WHERE user_id = ?");
         $stmt->bind_param('i',$user->getId());
         $stmt->execute();
-
         foreach ($stmt->get_result() as $row) {
             $stmt->close();
-            return $row[$column];
+            $data = $row;
+            unset($data['id'], $data['user_id']);
+            return $data;
         }
-
-        return null;
     }
 
     /**
      * @param UserInterface $user
-     * @param string $column
      * @param mixed $data
      */
-    private function setData(UserInterface $user, string $column, $data)
+    private function setData(UserInterface $user, $data)
     {
-        $stmt = $this->connection->prepare("UPDATE user_profile SET ".$column." = ? WHERE user_id = ?");
-        $stmt->bind_param('si', $data, $user->getId());
-        $stmt->execute();
-        $stmt->close();
+        unset($data['id'], $data['user_id']);
+        $query = 'UPDATE user_profile SET ';
+        $types = str_repeat('s', count($data)).'i';
+        $query .= implode(' = ?,', array_keys($data));
+        $query .= ' = ? WHERE user_id = ?';
+        $stmt = $this->connection->prepare($query);
+        var_dump($query);
+        var_dump($types);
+        foreach ($data as $value){
+            $stmt->bind_param($types, $value, $user->getId());
+            $stmt->execute();
+            $stmt->close();
+            return;
+        }
     }
 }

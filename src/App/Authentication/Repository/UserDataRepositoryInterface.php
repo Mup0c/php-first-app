@@ -14,15 +14,15 @@ interface UserDataRepositoryInterface
 {
     /**
      * @param UserInterface $user
-     * @return int|null
+     * @return null|string
      */
-    public function getPostalCode(UserInterface $user): ?int;
+    public function getPostalCode(UserInterface $user): ?string;
 
     /**
      * @param UserInterface $user
-     * @return int|null
+     * @return null|string
      */
-    public function getPhone(UserInterface $user): ?int;
+    public function getPhone(UserInterface $user): ?string;
 
     /**
      * @param UserInterface $user
@@ -30,5 +30,24 @@ interface UserDataRepositoryInterface
      */
     public function getCity(UserInterface $user): ?string;
 
+    /**
+     * @param UserInterface $user
+     * @param string $data
+     */
+    public function setPostalCode(UserInterface $user, string $data);
+
+
+    /**
+     * @param UserInterface $user
+     * @param string $data
+     */
+    public function setPhone(UserInterface $user, string $data);
+
+
+    /**
+     * @param UserInterface $user
+     * @param string $data
+     */
+    public function setCity(UserInterface $user, string $data);
 
 }

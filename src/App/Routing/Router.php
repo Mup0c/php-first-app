@@ -48,7 +48,7 @@ class Router
 
         switch ($path) {
             case '/':
-                $this->controller->HomeAction();
+                $this->controller->homeAction();
                 return;
             case '/signIn':
                 $this->controller->signInAction();
@@ -58,6 +58,9 @@ class Router
                 return;
             case '/logout':
                 $this->controller->logoutAction();
+                return;
+            case '/profile':
+                $this->controller->profileAction();
                 return;
             default:
                 $this->controller->notFoundAction();

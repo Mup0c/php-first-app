@@ -142,13 +142,50 @@ class Controller
 
     }
 
-    public function HomeAction()
+    public function homeAction()
     {
         if (!$this->user_token->isAnonymous()){
-            echo('<h1> Дороу, '.$this->user_token->getUser()->getLogin());
-            echo('</h1><br><a href="/logout">Выход</a>');
+            echo('<a href="/logout">Выход</a> <a href="/profile">Профиль</a>');
+            echo('<h1><br> Дороу, '.$this->user_token->getUser()->getLogin());
         } else {
             echo('<a href="/signIn">Вход</a>');
         }
     }
+
+    /**
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
+    public function profileAction()
+    {
+        if ($this->user_token->isAnonymous()) {
+            header("Location: /signIn");
+            return;
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+            var_dump($_POST);
+            $this->user_data_repo->setPhone($this->user_token->getUser(), $_POST['phone']);
+            $this->user_data_repo->setPostalCode($this->user_token->getUser(), $_POST['postal_code']);
+            $this->user_data_repo->setCity($this->user_token->getUser(), $_POST['city']);
+
+            return;
+        }
+        if ($_GET["edit"] == 'true') {
+            $template = $this->twig->load('profile_edit.html.twig');
+            $template->display(array(
+                'user_data' => $this->user_data_repo->getData($this->user_token->getUser())
+            ));
+
+            var_dump($this->user_data_repo->getData($this->user_token->getUser()));
+
+            return;
+        }
+        $template = $this->twig->load('profile.html.twig');
+        $template->display(array(
+            'user_data' => $this->user_data_repo->getData($this->user_token->getUser())
+        ));
+        return;
+        }
 }
