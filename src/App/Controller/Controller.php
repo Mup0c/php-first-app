@@ -138,8 +138,10 @@ class Controller
 
     public function notFoundAction()
     {
-        echo("404");
+        header("HTTP/1.0 404 Not Found");
+        // ??  header('Status: 404 Not Found');
 
+        return;
     }
 
     public function homeAction()
@@ -150,6 +152,7 @@ class Controller
         } else {
             echo('<a href="/signIn">Вход</a>');
         }
+        return;
     }
 
     /**
@@ -187,5 +190,18 @@ class Controller
             'user_data' => $this->user_data_repo->getData($this->user_token->getUser())
         ));
         return;
+    }
+
+    /**
+     * @param string $login
+     */
+    public function apiAction($login)
+    {
+        $user = $this->user_repo->findByLogin($login);
+        if (!empty($user)) {
+            echo json_encode($this->user_data_repo->getData($user));
+        } else {
+            $this->notFoundAction();
         }
+    }
 }

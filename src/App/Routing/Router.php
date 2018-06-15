@@ -45,7 +45,6 @@ class Router
     public function route()
     {
         $path = $this->parsed_url["path"];
-
         switch ($path) {
             case '/':
                 $this->controller->homeAction();
@@ -61,6 +60,9 @@ class Router
                 return;
             case '/profile':
                 $this->controller->profileAction();
+                return;
+            case preg_match('#^/API/([^/]*$)#', $path) ? $path : !$path:
+                $this->controller->apiAction(explode('/', $path)[2]);
                 return;
             default:
                 $this->controller->notFoundAction();
