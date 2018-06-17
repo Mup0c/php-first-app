@@ -26,6 +26,11 @@ class UserToken implements UserTokenInterface
         $this->user = $user;
     }
 
+    public static function anonymous(): UserTokenInterface
+    {
+        return new static(null);
+    }
+
     /**
      * Метод возвращает соответствующего юзера, если он есть.
      *
@@ -33,7 +38,7 @@ class UserToken implements UserTokenInterface
      */
     public function getUser(): ?UserInterface
     {
-        return ($this->user);
+        return $this->user;
     }
 
     /**
@@ -43,11 +48,6 @@ class UserToken implements UserTokenInterface
      */
     public function isAnonymous()
     {
-        if ($this->user == null){
-            return true;
-        }
-        else{
-            return false;
-        }
+        return $this->user == null;
     }
 }

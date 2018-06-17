@@ -40,12 +40,13 @@ class UserRepository implements UserRepositoryInterface
         $stmt->bind_param('i', $id);
         $stmt->execute();
 
+        $user = null;
         foreach ($stmt->get_result() as $row) {
-            $stmt->close();
-            return new User($row['id'], $row['login'], $row['password'], $row['salt']);
+            $user = new User($row['id'], $row['login'], $row['password'], $row['salt']);
         }
 
-        return null;
+        $stmt->close();
+        return $user;
     }
 
     /**
@@ -75,6 +76,7 @@ class UserRepository implements UserRepositoryInterface
      */
     public function save(UserInterface $user)
     {
+        //begin_transaction commit
         $stmt = $this->connection->prepare("INSERT INTO users (login, password, salt) VALUES (?, ?, ?)");
         $stmt->bind_param('sss',$user->getLogin(),$user->getPassword(), $user->getSalt());
         $stmt->execute();
@@ -83,6 +85,5 @@ class UserRepository implements UserRepositoryInterface
         $stmt->bind_param('i',$saved_user_id);
         $stmt->execute();
         $stmt->close();
-
     }
 }

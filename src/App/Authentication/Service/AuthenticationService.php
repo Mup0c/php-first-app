@@ -14,6 +14,12 @@ use App\Authentication\UserInterface;
 use App\Authentication\UserToken;
 use App\Authentication\UserTokenInterface;
 
+/**
+ * Class AuthenticationService
+ * @package App\Authentication\Service
+ *
+ * Тесты!
+ */
 class AuthenticationService implements AuthenticationServiceInterface
 {
     /**
@@ -38,17 +44,27 @@ class AuthenticationService implements AuthenticationServiceInterface
      */
     public function authenticate($credentials)
     {
-        if ($credentials == null) {
-            return new UserToken(null);
+        if (empty($credentials)) {
+            return UserToken::anonymous();
         }
-        $id = explode('/',$credentials,2)[0];
-        $password = explode('/',$credentials,2)[1];
+
+        $data = explode('/',$credentials, 2);
+        if (count($data) !== 2) {
+            return UserToken::anonymous();
+        }
+
+        list($id, $password) = $data;
+        if (empty($id) || empty($password)) {
+            return UserToken::anonymous();
+        }
+
         $user = $this->repo->findById($id);
+
         if ($user != null && $user->getPassword() == $password) {
             return new UserToken($user);
-        } else {
-            return new UserToken(null);
         }
+
+        return UserToken::anonymous();
     }
 
 
@@ -73,10 +89,11 @@ class AuthenticationService implements AuthenticationServiceInterface
     public function authenticate_by_password($login, $password)
     {
         $user = $this->repo->findByLogin($login);
+        // Общий метод
         if ($user != null && $user->getPassword() == $password) {
             return new UserToken($user);
-        } else {
-            return new UserToken(null);
         }
+
+        return UserToken::anonymous();
     }
 }

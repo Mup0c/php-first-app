@@ -64,7 +64,19 @@ class Controller
         $this->user_data_repo = new UserDataRepository($connection);
         $this->pass_encode = new UserPasswordEncode();
         $this->auth_service = new AuthenticationService($this->user_repo);
-        $this->user_token = $this->auth_service->authenticate($_COOKIE['auth_cookie']);
+    }
+
+    /**
+     * В базовый!
+     * @return UserTokenInterface
+     */
+    protected function getUserToken(): UserTokenInterface
+    {
+        if (!isset($this->user_token)) {
+            $this->user_token = $this->auth_service->authenticate($_COOKIE['auth_cookie']);
+        }
+
+        return $this->user_token;
     }
 
     /**
@@ -74,7 +86,7 @@ class Controller
      */
     public function signInAction()
     {
-        if (!$this->user_token->isAnonymous()) {
+        if (!$this->getUserToken()->isAnonymous()) {
             header("Location: /");
             return;
         }
@@ -103,7 +115,7 @@ class Controller
      */
     public function signUpAction()
     {
-        if (!$this->user_token->isAnonymous()) {
+        if (!$this->getUserToken()->isAnonymous()) {
             header("Location: /");
             return;
         }
@@ -111,10 +123,11 @@ class Controller
             $login = $_POST['login'];
             $password = $this->pass_encode->encodePassword($_POST['password']);
             if (!empty($this->user_repo->findByLogin($login))) {
-                echo('<h2> Логин уже занят!</h2>');
+                echo('<h2> Логин уже занят!</h2>'); // передавать состояние в шаблон
             } else {
+                // 2 раза лезишь в базу, зачем?
                 $this->user_repo->save(new User(null, $login, $password, null));
-                $token = $this->auth_service->authenticate_by_password($login, $password);
+                $token = $this->auth_service->generateCredentials($login, $password);
                 if (!$token->isAnonymous()) {
                     $credentials = $this->auth_service->generateCredentials($token->getUser());
                     setcookie('auth_cookie', $credentials, time() + 300);
@@ -146,7 +159,7 @@ class Controller
 
     public function homeAction()
     {
-        if (!$this->user_token->isAnonymous()){
+        if (!$this->getUserToken()->isAnonymous()){
             echo('<a href="/logout">Выход</a> <a href="/profile">Профиль</a>');
             echo('<h1><br> Дороу, '.$this->user_token->getUser()->getLogin());
         } else {
@@ -162,7 +175,7 @@ class Controller
      */
     public function profileAction()
     {
-        if ($this->user_token->isAnonymous()) {
+        if ($this->getUserToken()->isAnonymous()) {
             header("Location: /signIn");
             return;
         }
@@ -189,7 +202,6 @@ class Controller
         $template->display(array(
             'user_data' => $this->user_data_repo->getData($this->user_token->getUser())
         ));
-        return;
     }
 
     /**

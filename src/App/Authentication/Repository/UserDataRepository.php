@@ -101,6 +101,7 @@ class UserDataRepository implements UserDataRepositoryInterface
     /**
      * @param UserInterface $user
      * @param mixed $data
+     * Добавить класс UserInfo и передавать его сюда
      */
     private function setData(UserInterface $user, $data)
     {
@@ -110,8 +111,7 @@ class UserDataRepository implements UserDataRepositoryInterface
         $query .= implode(' = ?,', array_keys($data));
         $query .= ' = ? WHERE user_id = ?';
         $stmt = $this->connection->prepare($query);
-        var_dump($query);
-        var_dump($types);
+
         foreach ($data as $value){
             $stmt->bind_param($types, $value, $user->getId());
             $stmt->execute();
